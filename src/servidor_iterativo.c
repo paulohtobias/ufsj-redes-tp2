@@ -1,4 +1,4 @@
-#include "iterativo.h"
+#include "servidor_iterativo.h"
 
 int servidor_iterativo(int sfd) {
 	int cliente_sfd;
