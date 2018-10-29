@@ -1,13 +1,9 @@
 #include "iterativo.h"
 #include "servidor_threads.h"
+#include "servidor_fila.h"
 #include <ctype.h>
 
-enum {
-	MODO_ITERATIVO,
-	__MODO_QTD
-};
-
-int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads};
+int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads, servidor_fila};
 
 int main(int argc, char *argv[]) {
 	//Pegando as flags
