@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <arpa/inet.h>
+#include "utils.h"
 
 #define PORTA 2222
 #define DEFAULT_BACKLOG 5
@@ -30,6 +31,8 @@ int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog);
 ///Cria uma nova conexão TCP e retorna o socket.
 int servidor_accept(int ssfd);
 
-void *servidor_processar_conexao(void *args);
+void servidor_processar_conexao_simples(int cliente_sfd);
+
+char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta);
 
 #endif //SERVIDOR

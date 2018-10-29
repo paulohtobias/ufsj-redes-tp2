@@ -51,56 +51,66 @@ int servidor_accept(int ssfd) {
 	return client_socket_fd;
 }
 
-void *servidor_processar_conexao(void *args) {
-	int cliente_sfd = *((int *) args);
-	free(args);
-
+void servidor_processar_conexao_simples(int cliente_sfd) {
 	char buff[BUFF_LEN] = {0};
+	char *resposta = NULL;
+	int tamanho_resposta;
 	int retval;
-
-	//TO-DO: temporário.
-	char resposta[] =
-		//Cabeçalho
-		"HTTP/1.1 200 OK\r\n\r\n"
-
-		//Dados
-		"<html>"
-			"<head>"
-			"<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>"
-				"<title>Página Inicial do meu Site</title>"
-			"</head>"
-			"<body>"
-				"<h1>Título</h1>"
-					"<h2>Sub-título</h2>"
-						"<h3>blablabla</h3>"
-			"</body>"
-		"</html>"
-	;
-
-	//TO-DO: talvez fazer um loop pra caso o cliente faça vários pedidos?
 
 	while (1) {
 		//Lê o pedido do cliente.
+		if (gverbose) {
+			printf("Esperando pedido...\n");
+		}
 		retval = read(cliente_sfd, buff, BUFF_LEN - 1);
+
 		if (retval == -1) {
-			handle_error(1, "servidor_processar_conexao-read");
+			close(cliente_sfd);
+			handle_error(1, "iterativo_processar_conexao-read");
 		} else if (retval == 0) {
-			return NULL;
+			break;
 		}
 
 		//Mostra a requisição na tela.
 		if (gverbose) {
-			printf("Reqest:\n<%s>\n", buff);
+			printf("\033[0mReqest (%d):\n<%s>\033[0;31m\n", retval, buff);
 		}
 
-		//TO-DO: Faz um parse e processa o pedido.
+		resposta = servidor_processar_pedido(buff, retval, &tamanho_resposta);
 
 		//Envia resposta ao cliente.
-		write(cliente_sfd, resposta, strlen(resposta) + 1);
+		write(cliente_sfd, resposta, tamanho_resposta);
+		free(resposta);
 
-		close(cliente_sfd);
 		break;
 	}
 
-	return NULL;
+	//Fecha a conexão com o cliente
+	close(cliente_sfd);
+}
+
+char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta) {
+	//TO-DO: temporário.
+	char resposta_cabecalho[] =
+		"HTTP/1.1 200 OK\r\n\r\n";
+	int tamanho_cabecalho = strlen(resposta_cabecalho);
+
+	char caminho[256] = "testes";
+	sscanf(&pedido[4], "%s", caminho + strlen(caminho));
+
+	if (strcmp(caminho, "testes/") == 0) {
+		strcat(caminho, "index.html");
+	}
+
+	uint8_t *dados = carregar_arquivo(caminho, tamanho_resposta);
+
+	char *resposta = malloc(tamanho_cabecalho + (*tamanho_resposta));
+	strcpy(resposta, resposta_cabecalho);
+	memcpy(resposta + tamanho_cabecalho, dados, *tamanho_resposta);
+
+	free(dados);
+
+	(*tamanho_resposta) += tamanho_cabecalho;
+
+	return resposta;
 }

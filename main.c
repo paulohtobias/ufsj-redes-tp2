@@ -1,4 +1,5 @@
 #include "iterativo.h"
+#include "servidor_threads.h"
 #include <ctype.h>
 
 enum {
@@ -6,7 +7,7 @@ enum {
 	__MODO_QTD
 };
 
-int (*tecnicas[])(int) = {servidor_iterativo};
+int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads};
 
 int main(int argc, char *argv[]) {
 	//Pegando as flags
@@ -54,6 +55,8 @@ int main(int argc, char *argv[]) {
 
 	//Cria o socket.
 	int sfd = criar_socket_servidor(endereco, porta, backlog);
+
+	system("ifconfig");
 
 	tecnicas[modo](sfd);
 	return 0;
