@@ -1,9 +1,10 @@
 #include "servidor_iterativo.h"
 #include "servidor_threads.h"
 #include "servidor_fila.h"
+#include "servidor_concorrente.h"
 #include <ctype.h>
 
-int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads, servidor_fila};
+int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads, servidor_fila, servidor_concorrente};
 
 int main(int argc, char *argv[]) {
 	//Pegando as flags

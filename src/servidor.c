@@ -57,33 +57,30 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 	int tamanho_resposta;
 	int retval;
 
-	while (1) {
-		//Lê o pedido do cliente.
-		if (gverbose) {
-			printf("Esperando pedido...\n");
-		}
-		retval = read(cliente_sfd, buff, BUFF_LEN - 1);
-
-		if (retval == -1) {
-			close(cliente_sfd);
-			handle_error(1, "iterativo_processar_conexao-read");
-		} else if (retval == 0) {
-			break;
-		}
-
-		//Mostra a requisição na tela.
-		if (gverbose) {
-			printf("\033[0mReqest (%d):\n<%s>\033[0;31m\n", retval, buff);
-		}
-
-		resposta = servidor_processar_pedido(buff, retval, &tamanho_resposta);
-
-		//Envia resposta ao cliente.
-		write(cliente_sfd, resposta, tamanho_resposta);
-		free(resposta);
-
-		break;
+	//Lê o pedido do cliente.
+	if (gverbose) {
+		printf("Esperando pedido...\n");
 	}
+	retval = read(cliente_sfd, buff, BUFF_LEN - 1);
+
+	if (retval == -1) {
+		close(cliente_sfd);
+		handle_error(1, "iterativo_processar_conexao-read");
+	} else if (retval == 0) {
+		close(cliente_sfd);
+		return;
+	}
+
+	//Mostra a requisição na tela.
+	if (gverbose) {
+		printf("\033[0mReqest (%d):\n<%s>\033[0;31m\n", retval, buff);
+	}
+
+	resposta = servidor_processar_pedido(buff, retval, &tamanho_resposta);
+
+	//Envia resposta ao cliente.
+	write(cliente_sfd, resposta, tamanho_resposta);
+	free(resposta);
 
 	//Fecha a conexão com o cliente
 	close(cliente_sfd);
