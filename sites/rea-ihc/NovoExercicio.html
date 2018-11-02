@@ -1,0 +1,92 @@
+<html>
+
+<head>
+	<title>Visualizador de Ponteiros</title>
+
+	<meta charset="UTF8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<script src="frameworks/jquery/jquery-3.3.1.min.js"></script>
+	<script src="frameworks/bootstrap-4.0.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="frameworks/bootstrap-4.0.0/css/bootstrap.min.css">
+
+	<script src="frameworks/codemirror/lib/codemirror.js"></script>
+	<script src="frameworks/codemirror/mode/clike/clike.js"></script>
+	<script src="frameworks/codemirror/addon/edit/closebrackets.js"></script>
+	<script src="frameworks/codemirror/addon/edit/matchbrackets.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="frameworks/gliphycons/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="frameworks/codemirror/lib/codemirror.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<style>
+		.CodeMirror {
+			border: 1px solid #eee;
+			height: 100vh;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="row h-100">
+			<aside class="col-12 col-md-2 p-0 bg-dark">
+				<nav class="navbar navbar-expand navbar-dark bg-dark flex-row">
+					<div class="collapse navbar-collapse">
+						<div class="flex-md-column flex-row navbar-nav w-100 justify-content-between">
+							<ul class="list-unstyled components w-100">
+								<li class="nav-item">
+									<a class="nav-link text-center" href="index.php">
+										<span class="glyphicon glyphicon-home"></span> Home
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link text-center" href="NovoExercicio.html">
+										<span class="glyphicon glyphicon-floppy-save"></span> Criar exercício
+									</a>
+								</li>
+
+								<li><hr/></li>
+
+								<li>
+									<form action="" class="form-inline">
+										<div class="input-group w-100 mb-1 mt-1">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<a href="#">
+														<span class="glyphicon glyphicon-level-up"></span>
+													</a>
+												</span>
+											</div>
+											<input type="text" class="form-control" placeholder="Caminho do arquivo">
+										</div>
+										<button class="btn btn-success w-100 mb-1 mt-1">
+											Salvar
+										</button>
+									</form>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+			</aside>
+			<main class="col-12 col-md-10 m-0 p-0 h-100">
+				<div class="container-fluid m-0 p-0">
+					<textarea placeholder="Codigo" id="CodigoEscrever"></textarea>
+				</div>  
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>
+<script>
+	var Code = document.getElementById("CodigoEscrever");
+	var editor = CodeMirror.fromTextArea(Code, {
+		lineNumbers: true,
+		mode: "text/x-csrc",
+		indentUnit: 4,
+		indentWithTabs: true,
+		autoCloseBrackets: true,
+		matchBrackets: true
+	});
+</script>

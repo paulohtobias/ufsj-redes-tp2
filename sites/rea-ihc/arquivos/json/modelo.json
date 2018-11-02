@@ -1,0 +1,25 @@
+{
+    "funções":{
+        "main":{
+            "início":0, //Primeiro endereço na stack frame
+            "fim":4 //Último endereço na stackframe
+        },
+        "funcao2":{
+            "início":4,
+            "fim":7
+        }
+    },
+    "requisitos":[
+        {
+            "linha":"",
+            "alterações":[
+                {
+                    "Função":"",
+                    "Nome da Variável":"",
+                    "Valor":"",
+                    "ponteiro":false
+                }
+            ]
+        } //and so on...
+    ]
+}
