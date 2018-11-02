@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <arpa/inet.h>
+#include <limits.h>
+#include <sys/stat.h>
 #include "utils.h"
 
 #define PORTA 2222
@@ -24,6 +26,9 @@
 #define BUFF_LEN 2048
 
 extern int gverbose;
+char raiz[PATH_MAX];
+char raiz_site[PATH_MAX];
+char pagina_inicial[128];
 
 ///Cria um novo socket para servidor em modo listen.
 int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog);
@@ -31,8 +36,12 @@ int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog);
 ///Cria uma nova conexão TCP e retorna o socket.
 int servidor_accept(int ssfd);
 
+///Recebe pedidos do cliente e envia as respostas.
 void servidor_processar_conexao_simples(int cliente_sfd);
 
+///Processa o pedido do cliente e retorna a resposta apropriada.
 char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta);
+
+FILE *servidor_executar_php(const char *caminho, const char *metodo, const char *pares, int tamanho_comando);
 
 #endif //SERVIDOR

@@ -27,7 +27,7 @@ void *thread_fila(void *args) {
 		pthread_mutex_unlock(&mutex_fila);
 
 		if (gverbose) {
-			printf("Conexão aceita: %d\n", cliente_sfd);
+			printf("=======================\nConexão aceita: %d\n", cliente_sfd);
 		}
 
 		servidor_processar_conexao_simples(cliente_sfd);

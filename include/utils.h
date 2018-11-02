@@ -5,6 +5,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-void *carregar_arquivo(const char *nome_arquivo, int *tamanho_arquivo);
+void *carregar_arquivo(FILE *in, int *tamanho_arquivo);
 
 #endif //UTILS_H

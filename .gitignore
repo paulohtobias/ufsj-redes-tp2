@@ -39,9 +39,8 @@ cliente
 *.dSYM/
 
 #Project folders and files
-nbproject
 .vscode
-*.glade~
+sites/rea-ihc
 main
 
 cliente

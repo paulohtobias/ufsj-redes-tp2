@@ -13,10 +13,12 @@ int main(int argc, char *argv[]) {
 	int backlog = 0;
 	gverbose = 0;
 	int modo = -1;
+	strcpy(raiz_site, ".");
+	strcpy(pagina_inicial, "");
 
 	int opcao;
 	opterr = 0;
-	while ((opcao = getopt(argc, argv, "ve:p:b:m:")) != -1) {
+	while ((opcao = getopt(argc, argv, "ve:p:b:m:r:h:")) != -1) {
 		switch (opcao) {
 			case 'v':
 				gverbose = 1;
@@ -33,6 +35,12 @@ int main(int argc, char *argv[]) {
 			case 'm':
 				modo = atoi(optarg);
 				break;
+			case 'r':
+				strncpy(raiz_site, optarg, PATH_MAX);
+				break;
+			case 'h':
+				strncpy(pagina_inicial, optarg, 128);
+				break;
 			case '?':
 				if (optopt == 'e' || optopt == 'p') {
 					fprintf(stderr, "Opção -%c precisa do endereço do servidor.\n", optopt);
@@ -46,14 +54,33 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (modo == -1) {
-		printf("É preciso especificar o modo: -m MODO\n");
+		fprintf(stderr, "É preciso especificar o modo: -m MODO\n");
 		exit(1);
 	}
 
+	//Exibe o ip na tela.
+	if (gverbose) {
+		system("ifconfig");
+	}
+
+	//Caminho absoluto do wrapper para executar o php.
+	if (getcwd(raiz, PATH_MAX - 64) == NULL) {
+		handle_error(errno, "getcwd");
+	}
+
+	//Muda o diretório de trabalho.
+	if (chdir(raiz_site) == -1) {
+		handle_error(errno, "chdir");
+	}
+	if (gverbose) {
+		printf("Diretório atual: '%s'\n", raiz_site);
+	}
+	
+	system("pwd");
+	printf("path_max: %d\n", PATH_MAX);
+
 	//Cria o socket.
 	int sfd = criar_socket_servidor(endereco, porta, backlog);
-
-	system("ifconfig");
 
 	tecnicas[modo](sfd);
 	return 0;

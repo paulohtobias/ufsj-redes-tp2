@@ -11,7 +11,7 @@ int servidor_iterativo(int sfd) {
 		cliente_sfd = servidor_accept(sfd);
 
 		if (gverbose) {
-			printf("Conexão aceita: %d\n", cliente_sfd);
+			printf("=======================\nConexão aceita: %d\n", cliente_sfd);
 		}
 
 		servidor_processar_conexao_simples(cliente_sfd);
