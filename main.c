@@ -2,59 +2,30 @@
 #include "servidor_threads.h"
 #include "servidor_fila.h"
 #include "servidor_concorrente.h"
-#include <ctype.h>
+#include "opcoes.h"
 
 int (*tecnicas[])(int) = {servidor_iterativo, servidor_threads, servidor_fila, servidor_concorrente};
 
 int main(int argc, char *argv[]) {
 	//Pegando as flags
-	in_addr_t endereco = INADDR_ANY;
-	in_port_t porta = PORTA;
-	int backlog = 0;
-	gverbose = 0;
-	int modo = -1;
-	strcpy(raiz_site, ".");
-	strcpy(pagina_inicial, "");
+	in_port_t porta;
+	int backlog;
+	int modo;
 
-	int opcao;
-	opterr = 0;
-	while ((opcao = getopt(argc, argv, "ve:p:b:m:r:h:")) != -1) {
-		switch (opcao) {
-			case 'v':
-				gverbose = 1;
-				break;
-			case 'e':
-				inet_pton(AF_INET, optarg, &endereco);
-				break;
-			case 'p':
-				porta = atoi(optarg);
-				break;
-			case 'b':
-				backlog = atoi(optarg);
-				break;
-			case 'm':
-				modo = atoi(optarg);
-				break;
-			case 'r':
-				strncpy(raiz_site, optarg, PATH_MAX);
-				break;
-			case 'h':
-				strncpy(pagina_inicial, optarg, 128);
-				break;
-			case '?':
-				if (optopt == 'e' || optopt == 'p') {
-					fprintf(stderr, "Opção -%c precisa do endereço do servidor.\n", optopt);
-				} else if (isprint (optopt)) {
-					fprintf(stderr, "Opção -%c desconhecida.\n", optopt);
-				} else {
-					fprintf(stderr, "Caractere '\\x%x' de opção desconhecido.\n", optopt);
-				}
-				exit(1);
-		}
-	}
-	
-	if (modo == -1) {
-		fprintf(stderr, "É preciso especificar o modo: -m MODO\n");
+	opcao_t opcoes[] = {
+		OPCAO_INIT('v', tipo_bool, &gverbose, "0", "Imprime várias informações na tela sobre o estado do servidor"),
+		OPCAO_INIT('p', tipo_int, &porta, "PORTA=2222", "Servidor escutará requisições http na porta %s"),
+		OPCAO_INIT('b', tipo_int, &backlog, "BACKLOG=0", "Quantidade de conexões enfileiradas"),
+		OPCAO_INIT('m', tipo_int, &modo, "MODO", "0: servidor iterativo\n1: servidor com threads\n2: servidor com fila de requisições\n3: servidor não bloqueante"), //to-do: melhorar a descrição
+		OPCAO_INIT('r', tipo_str(PATH_MAX), raiz_site, "DIR=.", "Define o diretório raiz do servidor"),
+		OPCAO_INIT('i', tipo_str(128), pagina_inicial, "ARQ=", "Define qual a página inicial do site caso este seja acessado diretamente. index.php e index.html serão tentados automaticamente")
+	};
+
+	parse_args(argc, argv, opcoes, sizeof opcoes / sizeof(opcao_t));
+
+	//Checagem de erro
+	if (modo < 0 || modo > 3) {
+		fprintf(stderr, "modo deve estar entre 0 e 3.\n");
 		exit(1);
 	}
 
@@ -76,11 +47,12 @@ int main(int argc, char *argv[]) {
 		printf("Diretório atual: '%s'\n", raiz_site);
 	}
 	
-	system("pwd");
-	printf("path_max: %d\n", PATH_MAX);
+	if (gverbose) {
+		printf("Página inicial: '%s'\n", pagina_inicial);
+	}
 
 	//Cria o socket.
-	int sfd = criar_socket_servidor(endereco, porta, backlog);
+	int sfd = criar_socket_servidor(porta, backlog);
 
 	tecnicas[modo](sfd);
 	return 0;

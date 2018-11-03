@@ -2,7 +2,7 @@
 
 int gverbose = 1;
 
-int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog) {
+int criar_socket_servidor(in_port_t porta, int backlog) {
 	int retval;
 	
 	int sfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -18,7 +18,7 @@ int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog) {
 
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = endereco;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(porta);
 
 	retval = bind(sfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
@@ -26,9 +26,6 @@ int criar_socket_servidor(in_addr_t endereco, in_port_t porta, int backlog) {
 		handle_error(retval, "criar_socket_servidor-bind");
 	}
 
-	if (backlog < 1) {
-		backlog = DEFAULT_BACKLOG;
-	}
 	retval = listen(sfd, backlog);
 	if (retval == -1) {
 		handle_error(retval, "criar_socket_servidor-listen");
