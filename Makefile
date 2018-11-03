@@ -11,9 +11,7 @@ ODIR := ./obj/release
 INCLUDE_PATHS := -I$(IDIR)
 
 #Libraries
-LIBS := gtk+-3.0
-CFLAGS += `pkg-config --cflags $(LIBS)`
-LOADLIBES := `pkg-config --libs $(LIBS)`
+LOADLIBES := -pthread
 
 #Compilation line
 COMPILE = $(CC) $(CFLAGS) $(INCLUDE_PATHS)

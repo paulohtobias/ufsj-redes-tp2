@@ -153,6 +153,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 
 	FILE *in = NULL;
 	uint8_t *dados = NULL;
+	*tamanho_resposta = 0;
 	if (access(caminho, F_OK) != -1) {
 		//Verifica se é uma página html. Nesse caso, é preciso executar o php.
 		if (strstr(pedido, "text/html") != NULL) {
@@ -173,9 +174,20 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	} else {
 		strcpy(resposta_cabecalho, "HTTP/1.0 404 Not Found\r\n");
 
-		sprintf(caminho, "%s/404.html", raiz);
-		in = fopen(caminho, "r");
-		dados = carregar_arquivo(in, tamanho_resposta);
+		char pagina_nao_encontrada[] =
+			"<html>"
+				"<head>"
+					"<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>"
+					"<title>Página não encontrada</title>"
+				"</head>"
+				"<body>"
+					"<h1>Página não encontrada</h1>"
+				"</body>"
+			"</html>";
+		
+		*tamanho_resposta = sizeof pagina_nao_encontrada - 1;
+		dados = malloc(*tamanho_resposta);
+		memcpy(dados, pagina_nao_encontrada, *tamanho_resposta);
 	}
 
 	//Content-Length.
