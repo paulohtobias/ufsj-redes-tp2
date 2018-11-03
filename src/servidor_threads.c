@@ -10,16 +10,18 @@ void *servidor_threads_processar_conexao(void *args) {
 }
 
 int servidor_threads(int sfd) {
-	puts("######## MODO SERVIDOR THREADS ########");
-	printf("\033[0;31m");
-	
+	if (gverbose) {
+		puts("######## MODO SERVIDOR THREADS ########");
+		printf("\033[0;32m");
+	}
+
 	while (1) {
 		//Aceita a conexão.
 		int *cliente_sfd = malloc(sizeof(int));
 		*cliente_sfd = servidor_accept(sfd);
 
 		if (gverbose) {
-			printf("Conexão aceita: %d\n", *cliente_sfd);
+			printf("===============================================\nConexão aceita: %d\n", *cliente_sfd);
 		}
 
 		pthread_t thread;

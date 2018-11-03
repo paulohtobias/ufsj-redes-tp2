@@ -71,7 +71,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 
 	//Mostra a requisição na tela.
 	if (gverbose) {
-		printf("\033[0m%d: Reqest (%d):\n<%s>\033[0;31m\n", cliente_sfd, retval, buff);
+		printf("\033[1;34mReqest[csfd: %d; comprimento: %d]\n\033[0;34m%s\033[0;32m\n", cliente_sfd, retval, buff);
 	}
 
 	resposta = servidor_processar_pedido(buff, retval, &tamanho_resposta);
@@ -211,7 +211,6 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	return resposta;
 }
 
-//TO-DO: fazer um pipe+fork e trocar o stdout do filho (php) pelo fd do arquivo temporário.??
 FILE *servidor_executar_php(const char *caminho, const char *metodo, const char *argumentos, int tamanho_comando) {
 	char comando[tamanho_comando + 64];
 
@@ -223,6 +222,13 @@ FILE *servidor_executar_php(const char *caminho, const char *metodo, const char 
 
 	//Executa o php
 	sprintf(comando, "php -r 'parse_str(\"%s\", $_%s); include(\"%s\");'", argumentos, metodo, caminho);
+	if (gverbose) {
+		printf("Executando \033[1m%s\n", comando);
+	}
+
+	//Seta a cor pra vermelho pro caso de haver erros no php.
+	printf("\033[0;31m");
+
 	FILE *pin = popen(comando, "r");
 
 	//Copia a saída do php para o arquivo temporário.
@@ -234,7 +240,10 @@ FILE *servidor_executar_php(const char *caminho, const char *metodo, const char 
 	}
 	pclose(pin);
 
+	//Voltando a cor pra verde.
+	printf("\033[0;32m");
+
 	rewind(ftemp);
-	
+
 	return ftemp;
 }

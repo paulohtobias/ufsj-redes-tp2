@@ -1,8 +1,10 @@
 #include "servidor_concorrente.h"
 
 int servidor_concorrente(int sfd) {
-	puts("######## MODO SERVIDOR THREADS ########");
-	printf("\033[0;31m");
+	if (gverbose) {
+		puts("######## MODO SERVIDOR THREADS ########");
+		printf("\033[0;32m");
+	}
 	
 	fd_set master;
 	fd_set read_fds;
@@ -25,7 +27,10 @@ int servidor_concorrente(int sfd) {
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
 			handle_error(1, "select");
 		}
-		printf("Server-select() is OK...\n");
+
+		if (gverbose) {
+			printf("select\n");
+		}
 
 		for (i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) {
@@ -36,9 +41,13 @@ int servidor_concorrente(int sfd) {
 					if (cliente_sfd > fdmax) {
 						fdmax = cliente_sfd;
 					}
-					printf("New connection on socket %d\n", cliente_sfd);
+					if (gverbose) {
+						printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
+					}
 				} else {
-					printf("Tratando %d\n", i);
+					if (gverbose) {
+						printf("Tratando %d\n", i);
+					}
 					servidor_processar_conexao_simples(i);
 					FD_CLR(i, &master);
 				}

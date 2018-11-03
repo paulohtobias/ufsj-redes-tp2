@@ -27,7 +27,7 @@ void *thread_fila(void *args) {
 		pthread_mutex_unlock(&mutex_fila);
 
 		if (gverbose) {
-			printf("=======================\nConexão aceita: %d\n", cliente_sfd);
+			printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
 		}
 
 		servidor_processar_conexao_simples(cliente_sfd);
@@ -36,8 +36,10 @@ void *thread_fila(void *args) {
 
 int servidor_fila(int sfd) {
 	int i;
-	puts("######## MODO SERVIDOR FILA ########");
-	printf("\033[0;31m");
+	if (gverbose) {
+		puts("######## MODO SERVIDOR FILA ########");
+		printf("\033[0;32m");
+	}
 
 	//Cria as threads.
 	threads_fila = malloc(threads_fila_qtd * sizeof(pthread_t));
@@ -61,7 +63,7 @@ int servidor_fila(int sfd) {
 			tamanho_fila_max *= 2;
 			gfila = realloc(gfila, tamanho_fila_max * sizeof(int));
 			if (gfila == NULL) {
-				fprintf(stderr, "Não foi possível aumentar o tamanho da fila para %d.\n", tamanho_fila_max);
+				fprintf(stderr, "AVISO: Não foi possível aumentar o tamanho da fila para %d.\n", tamanho_fila_max);
 				exit(1);
 			}
 		}
