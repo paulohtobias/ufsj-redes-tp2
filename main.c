@@ -34,11 +34,6 @@ int main(int argc, char *argv[]) {
 		system("ifconfig");
 	}
 
-	//Caminho absoluto do wrapper para executar o php.
-	if (getcwd(raiz, PATH_MAX - 64) == NULL) {
-		handle_error(errno, "getcwd");
-	}
-
 	//Muda o diretório de trabalho.
 	if (chdir(raiz_site) == -1) {
 		handle_error(errno, "chdir");

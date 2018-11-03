@@ -4,10 +4,8 @@
 #define handle_error(cod, msg)\
 	perror(msg); exit(cod);
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "utils.h"
 #include <string.h>
-#include <stdint.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -18,15 +16,14 @@
 #include <stdarg.h>
 #include <arpa/inet.h>
 #include <limits.h>
-#include <sys/stat.h>
-#include "utils.h"
+
+#include <sys/wait.h>
 
 #define PORTA "2222"
 #define DEFAULT_BACKLOG "5"
 #define BUFF_LEN 2048
 
 extern int gverbose;
-char raiz[PATH_MAX];
 char raiz_site[PATH_MAX];
 char pagina_inicial[128];
 

@@ -213,7 +213,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 
 //TO-DO: fazer um pipe+fork e trocar o stdout do filho (php) pelo fd do arquivo temporário.??
 FILE *servidor_executar_php(const char *caminho, const char *metodo, const char *argumentos, int tamanho_comando) {
-	char comando[PATH_MAX + tamanho_comando + 20];
+	char comando[tamanho_comando + 64];
 
 	//Cria um arquivo temporário.
 	FILE *ftemp = tmpfile();
@@ -222,7 +222,7 @@ FILE *servidor_executar_php(const char *caminho, const char *metodo, const char 
 	}
 
 	//Executa o php
-	sprintf(comando, "php %s/wrapper.php %s %s?%s", raiz, metodo, caminho, argumentos);
+	sprintf(comando, "php -r 'parse_str(\"%s\", $_%s); include(\"%s\");'", argumentos, metodo, caminho);
 	FILE *pin = popen(comando, "r");
 
 	//Copia a saída do php para o arquivo temporário.
