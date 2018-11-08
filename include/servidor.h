@@ -22,7 +22,7 @@
 #define DEFAULT_BACKLOG "5"
 #define BUFF_LEN 2048
 
-extern int gverbose;
+int gverbose;
 char raiz_site[PATH_MAX];
 char pagina_inicial[128];
 

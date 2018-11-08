@@ -1,7 +1,5 @@
 #include "servidor.h"
 
-int gverbose = 1;
-
 int criar_socket_servidor(in_port_t porta, int backlog) {
 	int retval;
 	
@@ -85,6 +83,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 }
 
 char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta) {
+	//Pedido
 	char caminho[PATH_MAX] = ".";
 	char *metodo = NULL;
 	char *argumentos = "";
@@ -132,8 +131,36 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		argumentos_tamanho = strlen(argumentos);
 	}
 
+
+	//Resposta
+	char *resposta = NULL;
+	char resposta_cabecalho[2048];
+	FILE *in = NULL;
+	uint8_t *dados = NULL;
+	*tamanho_resposta = 0;
+
 	//Verifica se o caminho é um diretório.
 	if (diretorio(caminho)) {
+		//Redireciona caso a URL não termine com '/'.
+		//Ver https://httpd.apache.org/docs/2.4/en/mod/mod_dir.html#DirectorySlash
+		//  e https://webmasters.googleblog.com/2010/04/to-slash-or-not-to-slash.html
+		if (caminho[caminho_tamanho - 1] != '/') {
+			resposta = malloc(50 + caminho_tamanho);
+
+			//O navegador assume que o diretório atual é o último antes da /. Portanto,
+			//ele será redirecionado para o último diretório apenas.
+			while (caminho[--caminho_tamanho] != '/');
+
+			char *novo_local = &caminho[caminho_tamanho + 1];
+
+			sprintf(
+				resposta,
+				"HTTP/1.1 301 Moved Permanently\r\n"
+				"Location: %s/\r\n\r\n", novo_local);
+			*tamanho_resposta = strlen(resposta);
+
+			return resposta;
+		}
 		//Se o usuário especificou uma página inicial, então ela será usada.
 		if (pagina_inicial[0] != '\0') {
 			strcat(caminho, pagina_inicial);
@@ -151,9 +178,6 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		printf("Arquivo: '%s'\nMetodo: '%s'\nArgumentos: '%s'\n", caminho, metodo, argumentos);
 	}
 
-	FILE *in = NULL;
-	uint8_t *dados = NULL;
-	*tamanho_resposta = 0;
 	if (access(caminho, F_OK) != -1) {
 		//Verifica se é uma página html. Nesse caso, é preciso executar o php.
 		if (strstr(pedido, "text/html") != NULL) {
@@ -168,7 +192,6 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	}
 	
 	//Monta o cabeçalho.
-	char resposta_cabecalho[2048];
 	if (dados != NULL) {
 		strcpy(resposta_cabecalho, "HTTP/1.0 200 OK\r\n");
 	} else {
@@ -200,7 +223,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 
 	int tamanho_cabecalho = strlen(resposta_cabecalho);
 	
-	char *resposta = malloc(tamanho_cabecalho + (*tamanho_resposta));
+	resposta = malloc(tamanho_cabecalho + (*tamanho_resposta));
 	strcpy(resposta, resposta_cabecalho);
 	memcpy(resposta + tamanho_cabecalho, dados, *tamanho_resposta);
 
