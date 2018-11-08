@@ -1,5 +1,15 @@
 #include "utils.h"
 
+int diretorio(const char *caminho) {
+	struct stat sb;
+
+	if (stat(caminho, &sb) == 0) {
+		return S_ISDIR(sb.st_mode);
+	}
+
+	return 0;
+}
+
 void *carregar_arquivo(FILE *in, int *tamanho_arquivo) {
 	if (in == NULL) {
 		perror("carregar_arquivo-abrir");

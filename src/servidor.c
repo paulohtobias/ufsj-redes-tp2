@@ -132,8 +132,8 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		argumentos_tamanho = strlen(argumentos);
 	}
 
-	//Verifica se é a página inicial.
-	if (strcmp(caminho, "./") == 0) {
+	//Verifica se o caminho é um diretório.
+	if (diretorio(caminho)) {
 		//Se o usuário especificou uma página inicial, então ela será usada.
 		if (pagina_inicial[0] != '\0') {
 			strcat(caminho, pagina_inicial);
