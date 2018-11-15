@@ -179,8 +179,8 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	}
 
 	if (access(caminho, F_OK) != -1) {
-		//Verifica se é uma página html. Nesse caso, é preciso executar o php.
-		if (strstr(pedido, "text/html") != NULL) {
+		//Verifica se é preciso executar o php.
+		if (metodo[0] == 'P' || strstr(pedido, "text/html") != NULL) {
 			in = servidor_executar_php(caminho, metodo, argumentos, caminho_tamanho + metodo_tamanho + argumentos_tamanho);
 		} else {
 			//Se não for, basta abrir o arquivo normalmente.

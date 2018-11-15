@@ -19,7 +19,8 @@ int main(int argc, char *argv[]) {
 		OPCAO_INIT('b', tipo_int, &backlog, "BACKLOG=0", "Quantidade de conexões enfileiradas"),
 		OPCAO_INIT('m', tipo_int, &modo, "MODO", "0: servidor iterativo\n1: servidor com threads\n2: servidor com fila de requisições\n3: servidor não bloqueante"),
 		OPCAO_INIT('r', tipo_str(PATH_MAX), raiz_site, "DIR=.", "Define o diretório raiz do servidor"),
-		OPCAO_INIT('i', tipo_str(128), pagina_inicial, "ARQ=", "Define qual a página inicial do site caso este seja acessado diretamente. index.php e index.html serão tentados automaticamente")
+		OPCAO_INIT('i', tipo_str(128), pagina_inicial, "ARQ=", "Define qual a página inicial do site caso este seja acessado diretamente. index.php e index.html serão tentados automaticamente"),
+		OPCAO_INIT('t', tipo_int, &threads_fila_qtd, "THREADS=4", "Quantidade de threads consimidoras quando MODO=2")
 	};
 
 	parse_args(argc, argv, opcoes, sizeof opcoes / sizeof(opcao_t));

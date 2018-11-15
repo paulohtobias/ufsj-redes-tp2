@@ -5,7 +5,6 @@ int *gfila = NULL;
 int tamanho_fila_max = 256;
 
 ///Threads
-int threads_fila_qtd = 4;
 pthread_t *threads_fila;
 
 ///Variáveis de condição.
