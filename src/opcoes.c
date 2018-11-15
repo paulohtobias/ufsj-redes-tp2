@@ -11,21 +11,34 @@ int flag_hash(int flag) {
 	return -1;
 }
 
+int conversao_bool(opcao_t *opcao, const void *valor){
+	int v = (valor == NULL) ? 1 : atoi(valor);
+	*((int *) opcao->buffer) = v;
+	return 1;
+}
+
+int conversao_char(opcao_t *opcao, const void *valor){
+	*((char *) opcao->buffer) = *((char *) valor);
+	return 1;
+}
+
+int conversao_int(opcao_t *opcao, const void *valor){
+	*((int *) opcao->buffer) = atoi(valor);
+	return 1;
+}
+
+int conversao_double(opcao_t *opcao, const void *valor){
+	*((int *) opcao->buffer) = atof(valor);
+	return 1;
+}
+
+int conversao_str(opcao_t *opcao, const void *valor){
+	strncpy(opcao->buffer, valor, opcao->tipo.tamanho);
+	return 1;
+}
+
 int opcao_definir_valor(opcao_t *opcao, const void *valor) {
-	if (opcao->tipo.cod == FT_BOOL) {
-		int v = (valor == NULL) ? 1 : atoi(valor);
-		*((int *) opcao->valor) = v;
-	} else if (opcao->tipo.cod == FT_CHAR) {
-		*((char *) opcao->valor) = *((char *) valor);
-	} else if (opcao->tipo.cod == FT_INT) {
-		*((int *) opcao->valor) = atoi(valor);
-	} else if (opcao->tipo.cod == FT_DOUBLE) {
-		*((int *) opcao->valor) = atof(valor);
-	} else if (opcao->tipo.cod == FT_STR) {
-		strncpy(opcao->valor, valor, opcao->tipo.tamanho);
-	} else {
-		return 0;
-	}
+	opcao->tipo.conversao(opcao, valor);
 
 	return 1;
 }
@@ -43,8 +56,8 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 		opcao = &opcoes[i];
 
 		j = 0;
-		valor_padrao = NULL;
-		if (opcao->nome_valor != NULL) {
+		valor_padrao = opcao->nome_valor;
+		if (opcao->nome_valor != NULL && opcao->tipo.cod != FT_BOOL) {
 			for (j = 0; opcao->nome_valor[j] != '\0' && opcao->nome_valor[j] != '='; nome_valor[j] = opcao->nome_valor[j], j++);
 			if (opcao->nome_valor[j] != '\0') {
 				valor_padrao = &opcao->nome_valor[j] + 1;
@@ -71,13 +84,24 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 			if (c != '\n') {
 				putchar(c);
 			}
-			if (k % 45 == 0) {
+			if (k % LARGURA_MAX == 0) {
 				quebrar_linha = 1;
 			}
 		}
 		
 		if (valor_padrao != NULL) {
-			printf(". Padrão: %s", valor_padrao);
+			if (opcao->tipo.cod == FT_BOOL) {
+				if (valor_padrao[0] == '0') {
+					valor_padrao = "Falso";
+				} else {
+					valor_padrao = "Verdadeiro";
+				}
+			}
+			const char *aspas = "";
+			if (opcao->tipo.cod == FT_STR) {
+				aspas = "'";
+			}
+			printf(". Padrão: %s%s%s", aspas, valor_padrao, aspas);
 		}
 		printf("\n");
 	}
@@ -107,11 +131,14 @@ void parse_args(int argc, char * const argv[], opcao_t *opcoes, int qtd_opcoes) 
 		const char *valor_padrao = opcao->nome_valor;
 		if (opcao->tipo.cod != FT_BOOL) {
 			valor_padrao = strstr(opcao->nome_valor, "=");
+			if (valor_padrao != NULL) {
+				valor_padrao++;
+			}
 		}
 
 		opcao->__obrigatoria = -1;
 		if (valor_padrao != NULL) {
-			opcao_definir_valor(opcao, valor_padrao + 1);
+			opcao_definir_valor(opcao, valor_padrao);
 		} else if (opcao->tipo.cod != FT_BOOL) {
 			opcao->__obrigatoria = i;
 			opcoes_obrigatorias++;
