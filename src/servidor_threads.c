@@ -17,6 +17,9 @@ int servidor_threads(int sfd) {
 
 	while (1) {
 		//Aceita a conexão.
+		if (gverbose) {
+			printf("Esperando conexão...\n");
+		}
 		int *cliente_sfd = malloc(sizeof(int));
 		*cliente_sfd = servidor_accept(sfd);
 

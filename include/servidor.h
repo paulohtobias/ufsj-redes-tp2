@@ -17,6 +17,7 @@
 #include <arpa/inet.h>
 #include <limits.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 
 #define PORTA "2222"
 #define DEFAULT_BACKLOG "5"
@@ -25,6 +26,7 @@
 int gverbose;
 char raiz_site[PATH_MAX];
 char pagina_inicial[128];
+time_t gtimeout;
 
 ///Cria um novo socket para servidor em modo listen.
 int criar_socket_servidor(in_port_t porta, int backlog);

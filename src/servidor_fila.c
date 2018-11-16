@@ -51,6 +51,10 @@ int servidor_fila(int sfd) {
 
 	int cliente_sfd;
 	while (1) {
+		//Aceita a conexão.
+		if (gverbose) {
+			printf("Esperando conexão...\n");
+		}
 		cliente_sfd = servidor_accept(sfd);
 
 		pthread_mutex_lock(&mutex_fila);

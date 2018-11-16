@@ -43,6 +43,15 @@ int servidor_accept(int ssfd) {
 		handle_error(client_socket_fd, "servidor_accept-accept");
 	}
 
+	//Define o timeout para leitura.
+	struct timeval timeout;
+	timeout.tv_sec = gtimeout;
+	timeout.tv_usec = 0;
+
+	if (setsockopt(client_socket_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout) < 0) {
+		handle_error(1, "servidor_accept-setsockopt");
+	}
+
 	return client_socket_fd;
 }
 
@@ -60,9 +69,14 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 
 	if (retval == -1) {
 		close(cliente_sfd);
-		handle_error(1, "iterativo_processar_conexao-read");
+		if (errno != EWOULDBLOCK) {
+			handle_error(1, "iterativo_processar_conexao-read");
+		}
+		return;
 	} else if (retval == 0) {
-		printf("Cliente fechou a conxão\n");
+		if (gverbose) {
+			printf("Cliente fechou a conexão\n");
+		}
 		close(cliente_sfd);
 		return;
 	}
