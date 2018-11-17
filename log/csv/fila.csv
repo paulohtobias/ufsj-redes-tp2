@@ -1,0 +1,70 @@
+threads;2
+Usuários;Trans Rate
+1;1,78;
+10;21,49;
+100;155,79;
+1000;521,42;
+
+threads;4
+Usuários;Trans Rate
+1;2,17;
+10;19,14;
+100;147,94;
+1000;700,66;
+
+threads;8
+Usuários;Trans Rate
+1;1,67;
+10;17,55;
+100;143,24;
+1000;924,66;
+
+threads;16
+Usuários;Trans Rate
+1;1,93;
+10;17,03;
+100;124,78;
+1000;821,96;
+
+threads;32
+Usuários;Trans Rate
+1;1,57;
+10;19,08;
+100;166,13;
+1000;900,61;
+
+threads;64
+Usuários;Trans Rate
+1;2,07;
+10;19,79;
+100;157,76;
+1000;1009,66;
+
+threads;128
+Usuários;Trans Rate
+1;2,04;
+10;16,05;
+100;110,10;
+1000;667,91;
+
+threads;256
+Usuários;Trans Rate
+1;2,30;
+10;20,25;
+100;142,40;
+1000;689,08;
+
+threads;512
+Usuários;Trans Rate
+1;1,99;
+10;17,74;
+100;119,90;
+1000;483,53;
+
+threads;1024
+Usuários;Trans Rate
+1;2,17;
+10;18,74;
+100;130,58;
+1000;470,71;
+
