@@ -55,16 +55,18 @@ int main(int argc, char *argv[]) {
 	int sfd = criar_socket_servidor(porta, backlog);
 
 	//Exibe o ip na tela.
-	puts("Escutando em:");
-	struct ifaddrs *ifaddr, *tmp;
-	getifaddrs(&ifaddr);
-	for (tmp = ifaddr; tmp != NULL; tmp = tmp->ifa_next) {
-		if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
-			struct sockaddr_in *addr = (struct sockaddr_in *) tmp->ifa_addr;
-			printf("%s: %s:%d\n", tmp->ifa_name, inet_ntoa(addr->sin_addr), porta);
+	if (gverbose) {
+		puts("Escutando em:");
+		struct ifaddrs *ifaddr, *tmp;
+		getifaddrs(&ifaddr);
+		for (tmp = ifaddr; tmp != NULL; tmp = tmp->ifa_next) {
+			if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET) {
+				struct sockaddr_in *addr = (struct sockaddr_in *) tmp->ifa_addr;
+				printf("%s: %s:%d\n", tmp->ifa_name, inet_ntoa(addr->sin_addr), porta);
+			}
 		}
+		freeifaddrs(ifaddr);
 	}
-	freeifaddrs(ifaddr);
 
 	tecnicas[modo](sfd);
 	return 0;
