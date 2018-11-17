@@ -46,6 +46,6 @@ void definir_limite_arquivos(rlim_t limite) {
 	getrlimit(RLIMIT_NOFILE, &fdlimit);
 	fdlimit.rlim_cur = limite;
 	if (setrlimit(RLIMIT_NOFILE, &fdlimit) == -1) {
-		handle_error(1, "definir_limite_arquivos");
+		handle_error(errno, "definir_limite_arquivos");
 	}
 }

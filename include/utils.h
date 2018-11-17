@@ -9,7 +9,7 @@
 #include <errno.h>
 
 #define handle_error(cod, msg)\
-	fprintf(stderr, "%d: ", errno); perror(msg); exit(cod);
+	fprintf(stderr, "%d: ", errno); perror(msg); if (cod) {exit(cod);}
 
 int diretorio(const char *caminho);
 

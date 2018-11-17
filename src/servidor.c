@@ -5,13 +5,13 @@ int criar_socket_servidor(in_port_t porta, int backlog) {
 	
 	int sfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sfd == -1) {
-		handle_error(sfd, "criar_socket_servidor-socket");
+		handle_error(errno, "criar_socket_servidor-socket");
 	}
 
 	int enable = 1;
 	retval = setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
 	if (retval < 0) {
-		handle_error(retval, "criar_socket_servidor-setsockopt(SO_REUSEADDR)");
+		handle_error(errno, "criar_socket_servidor-setsockopt(SO_REUSEADDR)");
 	}
 
 	struct sockaddr_in server_addr;
@@ -21,7 +21,7 @@ int criar_socket_servidor(in_port_t porta, int backlog) {
 
 	retval = bind(sfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
 	if (retval == -1) {
-		handle_error(retval, "criar_socket_servidor-bind");
+		handle_error(errno, "criar_socket_servidor-bind");
 	}
 
 	retval = listen(sfd, backlog);
@@ -41,10 +41,10 @@ int servidor_accept(int ssfd) {
 	client_socket_fd = accept(ssfd, (struct sockaddr *) &client_addr, &client_len);
 	if (client_socket_fd == -1) {
 		if (errno == EMFILE || errno == ENFILE) {
-			printf("Número máximo de arquivos atingido\n");
+			handle_error(0, "servidor_accept-accept");
 			return -1;
 		}
-		handle_error(client_socket_fd, "servidor_accept-accept");
+		handle_error(errno, "servidor_accept-accept");
 	}
 
 	//Define o timeout para leitura.
@@ -53,7 +53,7 @@ int servidor_accept(int ssfd) {
 	timeout.tv_usec = 0;
 
 	if (setsockopt(client_socket_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout) < 0) {
-		handle_error(1, "servidor_accept-setsockopt");
+		handle_error(errno, "servidor_accept-setsockopt");
 	}
 
 	return client_socket_fd;
@@ -73,9 +73,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 
 	if (retval == -1) {
 		close(cliente_sfd);
-		if (errno != EWOULDBLOCK) {
-			handle_error(1, "iterativo_processar_conexao-read");
-		}
+		handle_error(0, "iterativo_processar_conexao-read");
 		return;
 	} else if (retval == 0) {
 		if (gverbose) {
@@ -143,7 +141,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		}
 		caminho[i + 1] = '\0';
 		caminho_tamanho = strlen(caminho);
-		
+
 		//Pegando os argumentos vindos do POST.
 		argumentos = strstr(pedido, "\r\n\r\n") + 4;
 		argumentos_tamanho = strlen(argumentos);
@@ -258,7 +256,8 @@ FILE *servidor_executar_php(const char *caminho, const char *metodo, const char 
 	//Cria um arquivo temporário.
 	FILE *ftemp = tmpfile();
 	if (ftemp == NULL) {
-		handle_error(errno, "servidor_executar_php-tmpfile");
+		handle_error(0, "servidor_executar_php-tmpfile");
+		return NULL;
 	}
 
 	//Executa o php

@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 	int sfd = criar_socket_servidor(porta, backlog);
 
 	//Exibe o ip na tela.
-	puts("Escutando nos em:");
+	puts("Escutando em:");
 	struct ifaddrs *ifaddr, *tmp;
 	getifaddrs(&ifaddr);
 	for (tmp = ifaddr; tmp != NULL; tmp = tmp->ifa_next) {

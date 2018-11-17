@@ -25,7 +25,7 @@ int servidor_concorrente(int sfd) {
 		read_fds = master;
 
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
-			handle_error(1, "select");
+			handle_error(errno, "select");
 		}
 
 		if (gverbose) {
