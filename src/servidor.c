@@ -101,13 +101,13 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta) {
 	//Pedido
 	char caminho[PATH_MAX] = ".";
-	char *metodo = NULL;
-	char *argumentos = "";
-	
+	const char *metodo = NULL;
+	const char *argumentos = "";
+
 	int caminho_tamanho = 1;
 	int metodo_tamanho = 0;
 	int argumentos_tamanho = 0;
-	
+
 	int i;
 	//Método GET.
 	if (pedido[0] == 'G') {
@@ -116,21 +116,16 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 
 		//Identifica o arquivo.
 		for (i = 0; pedido[i + metodo_tamanho + 1] != ' '; i++) {
+			//Verifica se há argumentos na url.
+			if (pedido[i + metodo_tamanho + 1] == '&') {
+				argumentos = &pedido[i + metodo_tamanho + 2];
+				argumentos_tamanho = strlen(argumentos);
+				break;
+			}
 			caminho[i + 1] = pedido[i + metodo_tamanho + 1];
 		}
 		caminho[i + 1] = '\0';
-		
-		//Pegando valores na url, caso exista algum.
-		for (i = 0; caminho[i] != '\0' && caminho[i] != '&'; i++);
-
-		//Verifica se há argumentos na url.
-		if (caminho[i] == '&') {
-			caminho[i] = '\0';
-			argumentos = &caminho[i + 1];
-
-			argumentos_tamanho = strlen(argumentos);
-		}
-		caminho_tamanho = i;
+		caminho_tamanho = i + 1;
 	} else {
 		metodo = "POST";
 		metodo_tamanho = 4;
