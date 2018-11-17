@@ -37,12 +37,14 @@ int servidor_concorrente(int sfd) {
 				if (i == sfd) {
 					cliente_sfd = servidor_accept(sfd);
 
-					FD_SET(cliente_sfd, &master);
-					if (cliente_sfd > fdmax) {
-						fdmax = cliente_sfd;
-					}
-					if (gverbose) {
-						printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
+					if (cliente_sfd != -1) {
+						FD_SET(cliente_sfd, &master);
+						if (cliente_sfd > fdmax) {
+							fdmax = cliente_sfd;
+						}
+						if (gverbose) {
+							printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
+						}
 					}
 				} else {
 					if (gverbose) {

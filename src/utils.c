@@ -33,3 +33,19 @@ void *carregar_arquivo(FILE *in, int *tamanho_arquivo) {
 
 	return dados;
 }
+
+void exibir_limite_arquivos() {
+	struct rlimit fdlimit;
+	getrlimit(RLIMIT_NOFILE, &fdlimit);
+
+	printf("Máx. descritores: %lu/%lu\n", fdlimit.rlim_cur, fdlimit.rlim_max);
+}
+
+void definir_limite_arquivos(rlim_t limite) {
+	struct rlimit fdlimit;
+	getrlimit(RLIMIT_NOFILE, &fdlimit);
+	fdlimit.rlim_cur = limite;
+	if (setrlimit(RLIMIT_NOFILE, &fdlimit) == -1) {
+		handle_error(1, "definir_limite_arquivos");
+	}
+}

@@ -40,6 +40,10 @@ int servidor_accept(int ssfd) {
 	client_len = sizeof client_addr;
 	client_socket_fd = accept(ssfd, (struct sockaddr *) &client_addr, &client_len);
 	if (client_socket_fd == -1) {
+		if (errno == EMFILE || errno == ENFILE) {
+			printf("Número máximo de arquivos atingido\n");
+			return -1;
+		}
 		handle_error(client_socket_fd, "servidor_accept-accept");
 	}
 

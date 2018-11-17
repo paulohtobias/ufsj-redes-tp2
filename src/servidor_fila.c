@@ -57,20 +57,22 @@ int servidor_fila(int sfd) {
 		}
 		cliente_sfd = servidor_accept(sfd);
 
-		pthread_mutex_lock(&mutex_fila);
-		gfila[tamanho_fila++] = cliente_sfd;
-		//Sinaliza as threads que há um novo pedido.
-		if (tamanho_fila == 1) {
-			pthread_cond_broadcast(&cond_fila);
-		} else if (tamanho_fila == tamanho_fila_max) {
-			tamanho_fila_max *= 2;
-			gfila = realloc(gfila, tamanho_fila_max * sizeof(int));
-			if (gfila == NULL) {
-				fprintf(stderr, "AVISO: Não foi possível aumentar o tamanho da fila para %d.\n", tamanho_fila_max);
-				exit(1);
+		if (cliente_sfd != -1) {
+			pthread_mutex_lock(&mutex_fila);
+			gfila[tamanho_fila++] = cliente_sfd;
+			//Sinaliza as threads que há um novo pedido.
+			if (tamanho_fila == 1) {
+				pthread_cond_broadcast(&cond_fila);
+			} else if (tamanho_fila == tamanho_fila_max) {
+				tamanho_fila_max *= 2;
+				gfila = realloc(gfila, tamanho_fila_max * sizeof(int));
+				if (gfila == NULL) {
+					fprintf(stderr, "AVISO: Não foi possível aumentar o tamanho da fila para %d.\n", tamanho_fila_max);
+					exit(1);
+				}
 			}
+			pthread_mutex_unlock(&mutex_fila);
 		}
-		pthread_mutex_unlock(&mutex_fila);
 	}
 
 	for (i = 0; i < threads_fila_qtd; i++) {

@@ -1,12 +1,8 @@
 #ifndef SERVIDOR
 #define SERVIDOR
 
-#define handle_error(cod, msg)\
-	perror(msg); exit(cod);
-
 #include "utils.h"
 #include <string.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -27,6 +23,7 @@ int gverbose;
 char raiz_site[PATH_MAX];
 char pagina_inicial[128];
 time_t gtimeout;
+rlim_t gmax_fds;
 
 ///Cria um novo socket para servidor em modo listen.
 int criar_socket_servidor(in_port_t porta, int backlog);
