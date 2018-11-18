@@ -12,6 +12,7 @@ modos[0]="iterativo"
 modos[1]="threads"
 modos[2]="fila"
 modos[3]="concorrente"
+modos[4]="php"
 
 modo_str=${modos[$modo]}
 
@@ -26,10 +27,12 @@ saida_erros=log/erros-$modo_str/$usuarios
 echo "URL: $url"
 # Abrindo o servidor
 ./servidor -m $modo -p $porta -c $threads -q -r sites/site-simples/ &
+#php -S $url -t sites/site-simples/ &
 spid=$!
 
 # Rodando o siege
 echo Testando com $usuarios usuarios
 siege -c $usuarios -t $tempo --log=$saida --mark="$usuarios;$tempo;$threads" $url > /dev/null 2>$saida_erros
 kill $spid
+cat $saida
 

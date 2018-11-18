@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-modos = ["iterativo", "threads", "fila", "concorrente"]
+modos = ["iterativo", "threads", "fila", "concorrente", "php"]
 
 dados_necessarios = ["Trans Rate"]
 
