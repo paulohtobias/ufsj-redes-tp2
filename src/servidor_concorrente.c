@@ -2,7 +2,7 @@
 
 int servidor_concorrente(int sfd) {
 	if (!gquiet) {
-		puts("######## MODO SERVIDOR THREADS ########");
+		puts("######## MODO SERVIDOR CONCORRENTE ########");
 		printf("\033[0;32m");
 	}
 	

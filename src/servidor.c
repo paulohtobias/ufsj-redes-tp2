@@ -102,7 +102,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	//Pedido
 	char caminho[PATH_MAX] = ".";
 	const char *metodo = NULL;
-	const char *argumentos = "";
+	char argumentos[256] = {0};
 
 	int caminho_tamanho = 1;
 	int metodo_tamanho = 0;
@@ -117,8 +117,8 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		//Identifica o arquivo.
 		for (i = 0; pedido[i + metodo_tamanho + 1] != ' '; i++) {
 			//Verifica se há argumentos na url.
-			if (pedido[i + metodo_tamanho + 1] == '&') {
-				argumentos = &pedido[i + metodo_tamanho + 2];
+			if (pedido[i + metodo_tamanho + 1] == '?') {
+				sscanf(&pedido[i + metodo_tamanho + 2], "%s", argumentos);
 				argumentos_tamanho = strlen(argumentos);
 				break;
 			}
@@ -138,7 +138,7 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		caminho_tamanho = strlen(caminho);
 
 		//Pegando os argumentos vindos do POST.
-		argumentos = strstr(pedido, "\r\n\r\n") + 4;
+		sscanf(strstr(pedido, "\r\n\r\n") + 4, "%s", argumentos);
 		argumentos_tamanho = strlen(argumentos);
 	}
 
