@@ -25,7 +25,7 @@ saida_erros=log/erros-$modo_str/$usuarios
 
 echo "URL: $url"
 # Abrindo o servidor
-./servidor -m $modo -p $porta -c $threads -r sites/site-simples/ &
+./servidor -m $modo -p $porta -c $threads -q -r sites/site-simples/ &
 spid=$!
 
 # Rodando o siege

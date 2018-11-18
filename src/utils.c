@@ -12,7 +12,7 @@ int diretorio(const char *caminho) {
 
 void *carregar_arquivo(FILE *in, int *tamanho_arquivo) {
 	if (in == NULL) {
-		perror("carregar_arquivo-abrir");
+		handle_error(0, "carregar_arquivo-abrir");
 		*tamanho_arquivo = 0;
 		return NULL;
 	}
@@ -23,7 +23,7 @@ void *carregar_arquivo(FILE *in, int *tamanho_arquivo) {
 	rewind(in);
 	dados = malloc(*tamanho_arquivo);
 	if (dados == NULL) {
-		perror("carregar_arquivo-malloc");
+		handle_error(0, "carregar_arquivo-malloc");
 		*tamanho_arquivo = 0;
 		fclose(in);
 		return NULL;

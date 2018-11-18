@@ -66,7 +66,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 	int retval;
 
 	//Lê o pedido do cliente.
-	if (gverbose) {
+	if (!gquiet) {
 		printf("Esperando pedido...\n");
 	}
 	retval = read(cliente_sfd, buff, BUFF_LEN - 1);
@@ -76,7 +76,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 		handle_error(0, "iterativo_processar_conexao-read");
 		return;
 	} else if (retval == 0) {
-		if (gverbose) {
+		if (!gquiet) {
 			printf("Cliente fechou a conexão\n");
 		}
 		close(cliente_sfd);
@@ -84,7 +84,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 	}
 
 	//Mostra a requisição na tela.
-	if (gverbose) {
+	if (!gquiet) {
 		printf("\033[1;34mReqest[csfd: %d; comprimento: %d]\n\033[0;34m%s\033[0;32m\n", cliente_sfd, retval, buff);
 	}
 
@@ -175,23 +175,26 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		//Se o usuário especificou uma página inicial, então ela será usada.
 		if (pagina_inicial[0] != '\0') {
 			strcat(caminho, pagina_inicial);
+			caminho_tamanho += strlen(pagina_inicial);
 		} else {
 			//Caso contrário, tenta abrir primeiro index.php e depois index.html
 			if(access("index.php", F_OK) != -1) {
 				strcat(caminho, "index.php");
+				caminho_tamanho += 9;
 			} else {
 				strcat(caminho, "index.html");
+				caminho_tamanho += 10;
 			}
 		}
 	}
 
-	if (gverbose) {
+	if (!gquiet) {
 		printf("Arquivo: '%s'\nMetodo: '%s'\nArgumentos: '%s'\n", caminho, metodo, argumentos);
 	}
 
 	if (access(caminho, F_OK) != -1) {
 		//Verifica se é preciso executar o php.
-		if (metodo[0] == 'P' || strstr(pedido, "text/html") != NULL) {
+		if (argumentos_tamanho > 0 || extensao_php(caminho, caminho_tamanho)) {
 			in = servidor_executar_php(caminho, metodo, argumentos, caminho_tamanho + metodo_tamanho + argumentos_tamanho);
 		} else {
 			//Se não for, basta abrir o arquivo normalmente.
@@ -257,7 +260,7 @@ FILE *servidor_executar_php(const char *caminho, const char *metodo, const char 
 
 	//Executa o php
 	sprintf(comando, "php -r 'parse_str(\"%s\", $_%s); include(\"%s\");'", argumentos, metodo, caminho);
-	if (gverbose) {
+	if (!gquiet) {
 		printf("Executando \033[1m%s\n", comando);
 	}
 

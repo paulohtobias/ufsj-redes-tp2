@@ -1,7 +1,7 @@
 #include "servidor_concorrente.h"
 
 int servidor_concorrente(int sfd) {
-	if (gverbose) {
+	if (!gquiet) {
 		puts("######## MODO SERVIDOR THREADS ########");
 		printf("\033[0;32m");
 	}
@@ -28,7 +28,7 @@ int servidor_concorrente(int sfd) {
 			handle_error(errno, "select");
 		}
 
-		if (gverbose) {
+		if (!gquiet) {
 			printf("select\n");
 		}
 
@@ -42,12 +42,12 @@ int servidor_concorrente(int sfd) {
 						if (cliente_sfd > fdmax) {
 							fdmax = cliente_sfd;
 						}
-						if (gverbose) {
+						if (!gquiet) {
 							printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
 						}
 					}
 				} else {
-					if (gverbose) {
+					if (!gquiet) {
 						printf("Tratando %d\n", i);
 					}
 					servidor_processar_conexao_simples(i);

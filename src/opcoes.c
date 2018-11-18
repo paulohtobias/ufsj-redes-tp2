@@ -12,8 +12,12 @@ int flag_hash(int flag) {
 }
 
 int conversao_bool(opcao_t *opcao, const void *valor){
-	int v = (valor == NULL) ? 1 : atoi(valor);
-	*((int *) opcao->buffer) = v;
+	int *v = opcao->buffer;
+	if (valor == NULL) {
+		*v = !(*v);
+	} else {
+		*v = atoi(valor);
+	}
 	return 1;
 }
 
@@ -61,6 +65,8 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 			for (j = 0; opcao->nome_valor[j] != '\0' && opcao->nome_valor[j] != '='; nome_valor[j] = opcao->nome_valor[j], j++);
 			if (opcao->nome_valor[j] != '\0') {
 				valor_padrao = &opcao->nome_valor[j] + 1;
+			} else {
+				valor_padrao = NULL;
 			}
 		}
 		nome_valor[j] = '\0';
@@ -88,20 +94,14 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 				quebrar_linha = 1;
 			}
 		}
+		putchar('.');
 		
-		if (valor_padrao != NULL) {
-			if (opcao->tipo.cod == FT_BOOL) {
-				if (valor_padrao[0] == '0') {
-					valor_padrao = "Falso";
-				} else {
-					valor_padrao = "Verdadeiro";
-				}
-			}
+		if (opcao->tipo.cod != FT_BOOL && valor_padrao != NULL) {
 			const char *aspas = "";
 			if (opcao->tipo.cod == FT_STR) {
 				aspas = "'";
 			}
-			printf(". Padrão: %s%s%s", aspas, valor_padrao, aspas);
+			printf(" Padrão: %s%s%s", aspas, valor_padrao, aspas);
 		}
 		printf("\n");
 	}

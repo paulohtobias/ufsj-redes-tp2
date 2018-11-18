@@ -12,21 +12,21 @@ void *servidor_threads_processar_conexao(void *args) {
 int servidor_threads(int sfd) {
 	int retval;
 
-	if (gverbose) {
+	if (!gquiet) {
 		puts("######## MODO SERVIDOR THREADS ########");
 		printf("\033[0;32m");
 	}
 
 	while (1) {
 		//Aceita a conexão.
-		if (gverbose) {
+		if (!gquiet) {
 			printf("Esperando conexão...\n");
 		}
 		int *cliente_sfd = malloc(sizeof(int));
 		*cliente_sfd = servidor_accept(sfd);
 
 		if (*cliente_sfd != -1) {
-			if (gverbose) {
+			if (!gquiet) {
 				printf("===============================================\nConexão aceita: %d\n", *cliente_sfd);
 			}
 

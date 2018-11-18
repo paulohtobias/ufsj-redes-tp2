@@ -25,7 +25,7 @@ void *thread_fila(void *args) {
 		cliente_sfd = gfila[--tamanho_fila];
 		pthread_mutex_unlock(&mutex_fila);
 
-		if (gverbose) {
+		if (!gquiet) {
 			printf("===============================================\nConexão aceita: %d\n", cliente_sfd);
 		}
 
@@ -35,7 +35,7 @@ void *thread_fila(void *args) {
 
 int servidor_fila(int sfd) {
 	int i;
-	if (gverbose) {
+	if (!gquiet) {
 		puts("######## MODO SERVIDOR FILA ########");
 		printf("\033[0;32m");
 	}
@@ -52,7 +52,7 @@ int servidor_fila(int sfd) {
 	int cliente_sfd;
 	while (1) {
 		//Aceita a conexão.
-		if (gverbose) {
+		if (!gquiet) {
 			printf("Esperando conexão...\n");
 		}
 		cliente_sfd = servidor_accept(sfd);
