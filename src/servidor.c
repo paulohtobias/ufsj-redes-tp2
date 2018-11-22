@@ -212,17 +212,18 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		tamanho_cabecalho = 31;
 
 		//Escreve o tipo do arquivo.
-		char tipo[150] = "application/octet-stream";
 		//int comando_tamanho;
 		char comando[11 + caminho_tamanho];
 		sprintf(comando, "file -ib %s", caminho);
 		FILE *cin = popen(comando, "r");
 		if (cin != NULL) {
-			fread(tipo, 1, 150, cin);
+			tamanho_cabecalho += fread(&resposta_cabecalho[tamanho_cabecalho], 1, 150, cin) - 1;
 			fclose(cin);
-		}
-		for (i = 0; tipo[i] != '\n' && tipo[i] != '\0'; i++) {
-			resposta_cabecalho[tamanho_cabecalho++] = tipo[i];
+		} else {
+			char tipo[] = "application/octet-stream";
+			for (i = 0; tipo[i] != '\0'; i++) {
+				resposta_cabecalho[tamanho_cabecalho++] = tipo[i];
+			}
 		}
 		resposta_cabecalho[tamanho_cabecalho++] = '\r';
 		resposta_cabecalho[tamanho_cabecalho++] = '\n';
