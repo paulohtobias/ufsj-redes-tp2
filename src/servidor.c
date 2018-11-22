@@ -204,12 +204,31 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		//Carrega o arquivo.
 		dados = carregar_arquivo(in, tamanho_resposta);
 	}
-	
+
 	//Monta o cabeçalho.
+	int tamanho_cabecalho = 0;
 	if (dados != NULL) {
-		strcpy(resposta_cabecalho, "HTTP/1.0 200 OK\r\n");
+		strcpy(resposta_cabecalho, "HTTP/1.0 200 OK\r\nContent-Type: ");
+		tamanho_cabecalho = 31;
+
+		//Escreve o tipo do arquivo.
+		char tipo[150] = "application/octet-stream";
+		//int comando_tamanho;
+		char comando[11 + caminho_tamanho];
+		sprintf(comando, "file -ib %s", caminho);
+		FILE *cin = popen(comando, "r");
+		if (cin != NULL) {
+			fread(tipo, 1, 150, cin);
+			fclose(cin);
+		}
+		for (i = 0; tipo[i] != '\n' && tipo[i] != '\0'; i++) {
+			resposta_cabecalho[tamanho_cabecalho++] = tipo[i];
+		}
+		resposta_cabecalho[tamanho_cabecalho++] = '\r';
+		resposta_cabecalho[tamanho_cabecalho++] = '\n';
 	} else {
 		strcpy(resposta_cabecalho, "HTTP/1.0 404 Not Found\r\n");
+		tamanho_cabecalho = 24;
 
 		char pagina_nao_encontrada[] =
 			"<html>"
@@ -230,12 +249,14 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	//Content-Length.
 	char content_length[32];
 	sprintf(content_length, "Content-Length: %d\r\n", *tamanho_resposta);
-	strcat(resposta_cabecalho, content_length);
+	for (i = 0; content_length[i] != '\0'; i++) {
+		resposta_cabecalho[tamanho_cabecalho++] = content_length[i];
+	}
+	//strcat(resposta_cabecalho, content_length);
 
 	//Fim do cabeçalho.
-	strcat(resposta_cabecalho, "\r\n");
-
-	int tamanho_cabecalho = strlen(resposta_cabecalho);
+	resposta_cabecalho[tamanho_cabecalho++] = '\r';
+	resposta_cabecalho[tamanho_cabecalho++] = '\n';
 	
 	resposta = malloc(tamanho_cabecalho + (*tamanho_resposta));
 	strcpy(resposta, resposta_cabecalho);
