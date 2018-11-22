@@ -62,7 +62,7 @@ int servidor_fila(int sfd) {
 			gfila[tamanho_fila++] = cliente_sfd;
 			//Sinaliza as threads que há um novo pedido.
 			if (tamanho_fila == 1) {
-				pthread_cond_broadcast(&cond_fila);
+				pthread_cond_signal(&cond_fila);
 			} else if (tamanho_fila == tamanho_fila_max) {
 				tamanho_fila_max *= 2;
 				gfila = realloc(gfila, tamanho_fila_max * sizeof(int));

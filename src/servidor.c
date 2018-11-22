@@ -73,7 +73,7 @@ void servidor_processar_conexao_simples(int cliente_sfd) {
 
 	if (retval == -1) {
 		close(cliente_sfd);
-		handle_error(0, "iterativo_processar_conexao-read");
+		handle_error(0, "servidor_processar_conexao-read");
 		return;
 	} else if (retval == 0) {
 		if (!gquiet) {

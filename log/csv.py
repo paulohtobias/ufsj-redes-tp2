@@ -16,7 +16,7 @@ for modo in modos:
             if len(linha) == 0:
                 break
 
-            axis = linha[5:-6].split(";")
+            axis = linha[5:-6].split(",")
             usuarios = axis[0]
 
             threads = 4
