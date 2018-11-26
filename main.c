@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 		OPCAO_INIT('b', tipo_int, &backlog, "BACKLOG="DEFAULT_BACKLOG, "Quantidade de conexões enfileiradas"),
 		OPCAO_INIT('m', tipo_int, &modo, "MODO", "0: servidor iterativo\n1: servidor com threads\n2: servidor com fila de requisições\n3: servidor não bloqueante"),
 		OPCAO_INIT('t', tipo_int, &gtimeout, "TIMEOUT=5", "Define o timeout para conexões inativas"),
-		OPCAO_INIT('r', tipo_str(PATH_MAX), raiz_site, "DIR=.", "Define o diretório raiz do servidor"),
+		OPCAO_INIT('r', tipo_str(PATH_MAX), raiz_site, "DIR=sites/site-simples", "Define o diretório raiz do servidor"),
 		OPCAO_INIT('i', tipo_str(128), pagina_inicial, "ARQ=", "Define qual a página inicial do site caso este seja acessado diretamente. index.php e index.html serão tentados automaticamente"),
 		OPCAO_INIT('c', tipo_int, &threads_fila_qtd, "THREADS=4", "Quantidade de threads consimidoras quando MODO=2"),
 		OPCAO_INIT('l', tipo_int, &gmax_fds, "LIMITE=1024", "Altera a quantidade máxima de descritores de arquivo abertos para o processo")

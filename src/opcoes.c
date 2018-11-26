@@ -47,13 +47,36 @@ int opcao_definir_valor(opcao_t *opcao, const void *valor) {
 	return 1;
 }
 
+int print_descricao(const char *descricao, int tamanho, int j) {
+	int i = 0, quebrar_linha = 0;
+	int c;
+	while (i < tamanho) {
+		j++;
+
+		c = descricao[i++];
+		if (c == '\n' || (quebrar_linha && isspace(c))) {
+			printf("\n\t\t\t");
+			quebrar_linha = 0;
+			j = 1;
+		}
+		if (c != '\n') {
+			putchar(c);
+		}
+		if (j % LARGURA_MAX == 0) {
+			quebrar_linha = 1;
+		}
+	}
+	
+	return j;
+}
+
 void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 	int i, j;
 	const opcao_t *opcao;
 	char nome_valor[32];
 	const char *valor_padrao;
 	char descricao[DESCRICAO_MAX];
-	int descricao_tmanho = 0;
+	int descricao_tamanho = 0;
 	printf("Uso: %s\n", arg0);
 
 	for (i = 0; i < qtd_opcoes; i++) {
@@ -72,28 +95,11 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 		nome_valor[j] = '\0';
 
 		sprintf(descricao, opcao->descricao, nome_valor);
-		descricao_tmanho = strlen(descricao);
+		descricao_tamanho = strlen(descricao);
 		printf("  -%c\t%s\t\t", opcao->flag, nome_valor);
 		
 		//Descrição
-		j = 0;
-		int k = 0, quebrar_linha = 0;
-		while (j < descricao_tmanho) {
-			k++;
-
-			int c = descricao[j++];
-			if (c == '\n' || (quebrar_linha && isspace(c))) {
-				printf("\n\t\t\t");
-				quebrar_linha = 0;
-				k = 1;
-			}
-			if (c != '\n') {
-				putchar(c);
-			}
-			if (k % LARGURA_MAX == 0) {
-				quebrar_linha = 1;
-			}
-		}
+		j = print_descricao(descricao, descricao_tamanho, 0);
 		putchar('.');
 		
 		if (opcao->tipo.cod != FT_BOOL && valor_padrao != NULL) {
@@ -101,7 +107,9 @@ void print_ajuda(const char *arg0, const opcao_t *opcoes, int qtd_opcoes) {
 			if (opcao->tipo.cod == FT_STR) {
 				aspas = "'";
 			}
-			printf(" Padrão: %s%s%s", aspas, valor_padrao, aspas);
+			char padrao[12 + strlen(valor_padrao)];
+			sprintf(padrao, " Padrão: %s%s%s", aspas, valor_padrao, aspas);
+			print_descricao(padrao, strlen(padrao), j);
 		}
 		printf("\n");
 	}
