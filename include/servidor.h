@@ -37,6 +37,8 @@ void servidor_processar_conexao_simples(int cliente_sfd);
 ///Processa o pedido do cliente e retorna a resposta apropriada.
 char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tamanho_resposta);
 
+const char *obter_tipo_mime(const char *caminho, int tamanho);
+
 #define extensao_php(caminho, tamanho) (caminho[tamanho-1] == 'p' && caminho[tamanho-2] == 'h' && caminho[tamanho-3] == 'p' && caminho[tamanho-4] == '.')
 FILE *servidor_executar_php(const char *caminho, const char *metodo, const char *pares, int tamanho_comando);
 

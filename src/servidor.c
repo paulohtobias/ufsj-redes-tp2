@@ -212,19 +212,9 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 		tamanho_cabecalho = 31;
 
 		//Escreve o tipo do arquivo.
-		//int comando_tamanho;
-		char comando[11 + caminho_tamanho];
-		sprintf(comando, "file -ib %s", caminho);
-		FILE *cin = popen(comando, "r");
-		if (cin != NULL) {
-			tamanho_cabecalho += fread(&resposta_cabecalho[tamanho_cabecalho], 1, 150, cin) - 1;
-			fclose(cin);
-		} else {
-			char tipo[] = "application/octet-stream";
-			for (i = 0; tipo[i] != '\0'; i++) {
-				resposta_cabecalho[tamanho_cabecalho++] = tipo[i];
-			}
-		}
+		const char *tipo_mime = obter_tipo_mime(caminho, caminho_tamanho);
+		strcat(&resposta_cabecalho[tamanho_cabecalho], tipo_mime);
+		tamanho_cabecalho += strlen(tipo_mime);
 		resposta_cabecalho[tamanho_cabecalho++] = '\r';
 		resposta_cabecalho[tamanho_cabecalho++] = '\n';
 	} else {
@@ -268,6 +258,41 @@ char *servidor_processar_pedido(const char *pedido, int tamanho_pedido, int *tam
 	(*tamanho_resposta) += tamanho_cabecalho;
 
 	return resposta;
+}
+
+const char traducao_mime[][2][32] = {
+	{"html", "text/html"},
+	{"php", "text/html"},
+	{"css", "text/css"},
+	{"js", "application/javascript"},
+	{"jpeg", "image/jpeg"},
+	{"jpg", "image/jpeg"},
+	{"png", "image/png"},
+	{"gif", "image/gif"},
+	{"ico", "image/x-icon"},
+	{"mp4", "video/mp4"},
+	{"json", "application/json"},
+	{"pdf", "application/pdf"}
+};
+
+const char *obter_tipo_mime(const char *caminho, int tamanho) {
+	const char *extensao = NULL;
+	int i;
+	for (i = tamanho; i > 1 && caminho[i - 1] != '.'; i--);
+	if (i == 1) {
+		return "application/octet-stream";
+	}
+
+	extensao = &caminho[i];
+
+	int qtd_extensoes = sizeof traducao_mime / sizeof traducao_mime[0][0] / 2;
+	for (i = 0; i < qtd_extensoes; i++) {
+		if (strcmp(extensao, traducao_mime[i][0]) == 0) {
+			return traducao_mime[i][1];
+		}
+	}
+
+	return "application/octet-stream";
 }
 
 FILE *servidor_executar_php(const char *caminho, const char *metodo, const char *argumentos, int tamanho_comando) {
